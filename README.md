@@ -2,116 +2,41 @@
 
 This module is called within the `infrastructure` repository to create a new AWS VPC.
 
-## Root Module
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| availability_zones | The AWS availability zones in which subnets will be created | string | `<list>` | no |
+| aws_account | The name of the AWS account in which the VPC is being created | string | - | yes |
+| aws_region | The name of the AWS region in which the VPC will be created | string | - | yes |
+| aws_region_shortnames |  | string | `<map>` | no |
+| enable_dns_hostnames | True to enable DNS hostnames in the VPC | string | `true` | no |
+| enable_dns_support | True to enable private DNS within the VPC | string | `true` | no |
+| environment_name | Name of the enviornment the VPC belongs to | string | - | yes |
+| map_public_ip_on_launch | True to auto-assign a public IP on launch | string | `true` | no |
+| private_propagating_vgws | A list of VGWs the private route table should propagate. | string | `<list>` | no |
+| private_subnets |  | string | `<list>` | no |
+| public_propagating_vgws | A list of VGWs the public route table should propagate. | string | `<list>` | no |
+| public_subnets |  | string | `<list>` | no |
+| vpc_cidr | Define the VPC CIDR block | string | - | yes |
+| vpc_name | The desired name of the VPC being created | string | - | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| aws_region_shortname | The AWS region's shortname used when naming resources. i.e. "use1" |
+| flow_log_cloudwatch_log_group_arn |  |
+| flow_log_cloudwatch_log_group_name |  |
+| internet_gateway_id |  |
+| nat_eips |  |
+| private_route_table_ids |  |
+| private_subnet_cidr_blocks |  |
+| private_subnet_ids |  |
+| public_route_table_ids |  |
+| public_subnet_cidr_blocks |  |
+| public_subnet_ids |  |
+| vpc_cidr_block |  |
+| vpc_id |  |
 
 To instantiate the module, create a root module with the following files:
-
-__main.tf__
-
-```
-module "vpc" {
-  source = "git@github.com:TerraformDesignPattern/vpc.git"
-
-  aws_account        = "${var.aws_account}"
-  availability_zones = "${var.availability_zones}"
-  aws_region         = "${var.aws_region}"
-  private_subnets    = "${var.private_subnets}"
-  public_subnets     = "${var.public_subnets}"
-  vpc_cidr           = "${var.vpc_cidr}"
-  vpc_name           = "${var.vpc_name}"
-}
-```
-
-__variables.tf__
-
-As a personal preference, I try to only define data in variable files. 
-
-```
-variable "aws_accont" {}
-
-variable "aws_region" {}
-
-variable "vpc_name" {}
-
-variable "availability_zones" {
-  default = [
-    "us-east-1b",
-    "us-east-1c",
-    "us-east-1d"
-  ]
-}
-
-variable "private_subnets" {
-  default = [
-    "172.19.1.0/24",
-    "172.19.2.0/24",
-    "172.19.3.0/24"
-  ]
-}
-
-variable "public_subnets" {
-  default = [
-    "172.19.101.0/24",
-    "172.19.102.0/24",
-    "172.19.103.0/24"
-  ]
-}
-
-variable "vpc_cidr" {
-  default = "172.19.0.0/16"
-}
-```
-
-__outputs.tf__
-
-Export the module's outputs so environment service modules can use the state data.
-
-```
-output "availability_zones" {
-  value = "${var.availability_zones}"
-}
-
-output "internet_gateway_id" {
-  value = "${module.vpc.internet_gateway_id}"
-}
-
-output "nat_eips" {
-  value = ["${module.vpc.nat_eips}"]
-}
-
-output "private_route_table_ids" {
-  value = ["${module.vpc.private_route_table_ids}"]
-}
-
-output "private_subnet_cidr_blocks" {
-  value = ["${module.vpc.private_subnet_cidr_blocks}"]
-}
-
-output "private_subnet_ids" {
-  value = ["${module.vpc.private_subnet_ids}"]
-}
-
-output "public_route_table_ids" {
-  value = ["${module.vpc.public_route_table_ids}"]
-}
-
-output "public_subnet_cidr_blocks" {
-  value = ["${module.vpc.public_subnet_cidr_blocks}"]
-}
-
-output "public_subnet_ids" {
-  value = ["${module.vpc.public_subnet_ids}"]
-}
-
-output "vpc_cidr_block" {
-  value = "${module.vpc.vpc_cidr_block}"
-}
-
-output "vpc_id" {
-  value = "${module.vpc.vpc_id}"
-}
-
-output "vpc_name" {
-  value = "${var.vpc_name}"
-}
-```
