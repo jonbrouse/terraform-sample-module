@@ -1,4 +1,5 @@
 output "aws_region_shortname" {
+  description = "The AWS region's shortname used when naming resources. i.e. \"use1\""
   value = "${lookup(var.aws_region_shortnames, var.aws_region)}"
 }
 
